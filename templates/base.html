@@ -20,10 +20,46 @@
       type="image/png" 
       href="{{ url_for('static', filename='favicon.png') }}"
     />
+    <!-- tsParticles -->
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/engine@3.1.0/tsparticles.engine.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/basic@3.1.0/tsparticles.basic.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/interaction-particles-links@3.1.0/tsparticles.interaction.particles.links.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/move-base@3.1.0/tsparticles.move.base.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/shape-circle@3.1.0/tsparticles.shape.circle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/updater-color@3.1.0/tsparticles.updater.color.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/updater-opacity@3.1.0/tsparticles.updater.opacity.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/updater-size@3.1.0/tsparticles.updater.size.min.js"></script>
   </head>
-  <body>
+    <script>
+      // Apply saved theme immediately to prevent flashing
+      const initTheme = localStorage.getItem('theme');
+      if (initTheme) {
+        document.documentElement.setAttribute('data-theme', initTheme);
+      }
+    </script>
+    <!-- Global Page Loader -->
+    <div id="page-loader">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Animated Network Background -->
+    <div id="tsparticles"></div>
+
     <div class="app-layout">
-      <aside class="sidebar">
+      <!-- We initialize the classes if localStorage has collapsed=true to prevent layout shifts -->
+      <aside class="sidebar" id="main-sidebar">
+        <script>
+          if (localStorage.getItem('sidebar-collapsed') === 'true') {
+            document.getElementById('main-sidebar').classList.add('collapsed');
+          }
+        </script>
+        <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle Sidebar">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
         <div class="sidebar-header">
           <a href="{{ url_for('dashboard') }}" class="logo-container">
             <svg class="brand-logo" viewBox="0 0 100 100" width="48" height="48" xmlns="http://www.w3.org/2000/svg">
@@ -58,28 +94,46 @@
           <a
             href="{{ url_for('dashboard') }}"
             class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
+            data-tooltip="Dashboard"
             >
             <span class="nav-icon">📊</span>
-            Dashboard
+            <span class="nav-text">Dashboard</span>
           </a>
           <a
             href="{{ url_for('story') }}"
             class="nav-link {% if request.endpoint == 'story' %}active{% endif %}"
+            data-tooltip="Story"
             >
             <span class="nav-icon">📖</span>
-            Story
+            <span class="nav-text">Story</span>
           </a>
           <a
             href="{{ url_for('about') }}"
             class="nav-link {% if request.endpoint == 'about' %}active{% endif %}"
+            data-tooltip="About"
             >
             <span class="nav-icon">ℹ️</span>
-            About
+            <span class="nav-text">About</span>
           </a>
         </nav>
+        
+        <div class="theme-switch-wrapper">
+          <label class="theme-switch" for="theme-checkbox">
+            <input type="checkbox" id="theme-checkbox" />
+            <div class="slider round">
+              <span class="theme-icon sun">☀️</span>
+              <span class="theme-icon moon">🌙</span>
+            </div>
+          </label>
+        </div>
       </aside>
 
-      <div class="page-wrapper">
+      <div class="page-wrapper" id="main-wrapper">
+        <script>
+          if (localStorage.getItem('sidebar-collapsed') === 'true') {
+            document.getElementById('main-wrapper').classList.add('collapsed');
+          }
+        </script>
         <main class="main-content">
           <section class="hero">
             <h1 class="hero-title fade-up">
@@ -101,6 +155,136 @@
 
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
+
+      // Sidebar Collapse Logic
+      const sidebar = document.getElementById('main-sidebar');
+      const pageWrapper = document.getElementById('main-wrapper');
+      const sidebarToggle = document.getElementById('sidebar-toggle');
+      // Initial classes are now handled by inline blocking scripts above to prevent flashing
+      
+      sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        pageWrapper.classList.toggle('collapsed');
+        localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('collapsed'));
+        
+        // Dispatch resize event so Tableau can scale properly
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+        }, 350);
+      });
+
+      // Page Transition Logic
+      window.addEventListener("load", function() {
+        // Hide loader when page is fully loaded inside the iframe etc.
+        const loader = document.getElementById("page-loader");
+        const wrapper = document.querySelector(".page-wrapper");
+        
+        loader.classList.add("hidden");
+        // Ensure wrapper is visible
+        wrapper.classList.remove("fade-out");
+      });
+
+      // Show loader when navigating away via sidebar links
+      document.querySelectorAll(".nav-link").forEach(link => {
+        link.addEventListener("click", function(e) {
+          // Only animate for same-domain links that aren't opening new tabs
+          if (this.target !== "_blank") {
+            const loader = document.getElementById("page-loader");
+            const wrapper = document.querySelector(".page-wrapper");
+            
+            loader.classList.remove("hidden");
+            wrapper.classList.add("fade-out");
+          }
+        });
+      });
+
+      // Dark Mode Logic
+      const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+      
+      // The actual attribute application is handled by the block script at top of body to prevent flash
+      if (localStorage.getItem('theme') === 'dark') {
+        toggleSwitch.checked = true;
+      }
+
+      toggleSwitch.addEventListener('change', function(e) {
+        if (e.target.checked) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          localStorage.setItem('theme', 'dark');
+          updateParticlesColor("#ffffff");
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+          localStorage.setItem('theme', 'light');
+          updateParticlesColor("#1d1d1f");
+        }    
+      });
+
+      // --- tsParticles Loading Logic ---
+      async function loadParticles() {
+        await loadColorUpdater(tsParticles);
+        await loadCircleShape(tsParticles);
+        await loadBaseMover(tsParticles);
+        await loadSizeUpdater(tsParticles);
+        await loadOpacityUpdater(tsParticles);
+        await loadParticlesLinksInteraction(tsParticles);
+        await loadBasic(tsParticles);
+
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const particleColor = isDark ? "#ffffff" : "#1d1d1f";
+
+        await tsParticles.load({
+          id: "tsparticles",
+          options: {
+            background: {
+              color: { value: "transparent" },
+            },
+            fpsLimit: 60,
+            interactivity: {
+              events: {
+                onHover: { enable: false },
+                resize: true,
+              },
+            },
+            particles: {
+              color: { value: particleColor },
+              links: {
+                color: particleColor,
+                distance: 150,
+                enable: true,
+                opacity: 0.15,
+                width: 1,
+              },
+              move: {
+                direction: "none",
+                enable: true,
+                outModes: { default: "bounce" },
+                random: false,
+                speed: 0.8,
+                straight: false,
+              },
+              number: {
+                density: { enable: true, area: 800 },
+                value: 40,
+              },
+              opacity: { value: 0.15 },
+              shape: { type: "circle" },
+              size: { value: { min: 1, max: 3 } },
+            },
+            detectRetina: true,
+          },
+        });
+      }
+
+      function updateParticlesColor(colorHex) {
+        const container = tsParticles.domItem(0);
+        if (container) {
+          container.options.particles.color.value = colorHex;
+          container.options.particles.links.color = colorHex;
+          container.refresh();
+        }
+      }
+
+      loadParticles();
+
     </script>
   </body>
 </html>
