@@ -596,6 +596,17 @@ input:checked + .slider:before {
   .nav-icon {
     display: none; /* Hide icons on mobile header for space */
   }
+  
+  .theme-switch-wrapper {
+    margin-top: 0;
+    padding-top: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .theme-switch {
+    transform: scale(0.9);
+  }
 
   .page-wrapper {
     margin-left: 0;
