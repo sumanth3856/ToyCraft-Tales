@@ -1,0 +1,421 @@
+/* Custom CSS Variables */
+:root {
+  --bg-color: #fbfbfd;
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --accent-gradient: linear-gradient(135deg, #0071e3 0%, #4facfe 100%);
+  --accent-glow: rgba(0, 113, 227, 0.4);
+  /* Glassmorphism Variables */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+  --glass-shadow: 
+    0 8px 32px 0 rgba(31, 38, 135, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  --border-radius: 20px;
+  --transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  --text-gradient: linear-gradient(120deg, #1d1d1f 0%, #434344 100%);
+  --max-width: 1450px;
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* Ambient Mesh Subtle Gradient */
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(210, 100%, 97%, 1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(220, 100%, 95%, 1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(200, 100%, 93%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(230, 100%, 96%, 1) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Layout Structure */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Sidebar Navigation */
+.sidebar {
+  width: 260px;
+  background-color: rgba(251, 251, 253, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-right: var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 100;
+}
+
+.sidebar-header {
+  margin-bottom: 32px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  transition: opacity var(--transition);
+}
+
+.logo-container:hover {
+  opacity: 0.8;
+}
+
+.brand-logo {
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+}
+
+.logo-text {
+  font-family: "Outfit", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  line-height: 1.1;
+  background: var(--text-gradient);
+  -webkit-background-clip: text;
+  background-clip: text; /* standard property for compatibility */
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 12px 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.7;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-icon {
+  font-size: 1.15rem;
+  opacity: 0.6;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-link:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.03);
+  transform: translateX(4px);
+}
+
+.nav-link:hover .nav-icon {
+  transform: scale(1.15) rotate(5deg);
+  opacity: 1;
+}
+
+.nav-link.active {
+  opacity: 1;
+  color: #fff;
+  background: var(--accent-gradient);
+  font-weight: 600;
+  box-shadow: 0 4px 12px var(--accent-glow);
+  transform: translateX(4px);
+}
+
+.nav-link.active .nav-icon {
+  opacity: 1;
+  filter: brightness(2);
+  transform: scale(1.1);
+}
+
+/* Page Content Wrapper */
+.page-wrapper {
+  flex: 1;
+  margin-left: 260px; /* Offset for sidebar */
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 260px);
+}
+
+/* Main Content Area */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  opacity: 0;
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Hero Section */
+.hero {
+  padding: 48px 32px 24px;
+  max-width: 900px;
+}
+
+.hero-title {
+  font-family: "Outfit", sans-serif;
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  background: var(--text-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: clamp(20px, 2.5vw, 26px);
+  font-weight: 500;
+  color: var(--text-secondary);
+  max-width: 700px;
+}
+
+/* Content Container */
+.content-container {
+  width: 100%;
+  max-width: var(--max-width);
+  padding: 0 32px 48px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tableau Iframe Container - Glassmorphism */
+.tableau-container {
+  width: 100%;
+  min-height: 85vh; 
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: var(--glass-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden !important;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+/* Force hiding internal scrollbars specifically for iframes within */
+.tableau-container iframe {
+  overflow: hidden !important;
+}
+
+/* Ensure dashboard container isn't forced taller than internal scaled content */
+#dashboard-wrapper {
+  min-height: 0;
+}
+
+@media (min-width: 1024px) {
+  .tableau-container {
+    min-height: 850px;
+  }
+  #dashboard-wrapper {
+    min-height: 0;
+  }
+}
+
+.tableau-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(31, 38, 135, 0.1);
+}
+
+.tableau-container > iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 85vh;
+  border: none;
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .tableau-container > iframe {
+    min-height: 850px;
+  }
+}
+
+/* Cards (for About section) - Glassmorphism */
+.card {
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: var(--glass-border);
+  border-radius: var(--border-radius);
+  padding: 32px;
+  box-shadow: var(--glass-shadow);
+  width: 100%;
+  max-width: 800px;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(31, 38, 135, 0.1);
+}
+
+.about-container h2 {
+  font-family: "Outfit", sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 16px;
+  margin-top: 32px;
+}
+
+.about-container h2:first-child {
+  margin-top: 0;
+}
+
+.about-container p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.8;
+}
+
+/* Footer */
+.footer {
+  padding: 24px 32px;
+  text-align: left;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 220px;
+  }
+  .page-wrapper {
+    margin-left: 220px;
+    width: calc(100% - 220px);
+  }
+  .hero {
+    padding: 32px 24px 16px;
+  }
+  .content-container {
+    padding: 0 24px 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: 70px;
+    padding: 0 16px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .sidebar-header {
+    margin-bottom: 0;
+  }
+
+  .logo-container {
+    gap: 8px;
+  }
+
+  .logo-text {
+    font-size: 1.25rem;
+  }
+
+  .brand-logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .nav-menu {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .nav-link {
+    padding: 8px 12px;
+  }
+
+  .nav-icon {
+    display: none; /* Hide icons on mobile header for space */
+  }
+
+  .page-wrapper {
+    margin-left: 0;
+    width: 100%;
+    margin-top: 70px; /* Offset for top nav */
+  }
+
+  .hero {
+    padding: 24px 16px 16px;
+  }
+
+  .hero-title {
+    font-size: clamp(28px, 6vw, 36px);
+    margin-bottom: 8px;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(16px, 3.5vw, 20px);
+  }
+
+  .content-container {
+    padding: 0 16px 32px;
+  }
+
+  .card {
+    padding: 24px 16px;
+  }
+
+  .footer {
+    padding: 16px;
+    text-align: center;
+  }
+}
